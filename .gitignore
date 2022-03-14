@@ -1,0 +1,3 @@
+.env
+charts/g/release.yaml
+charts/g/dev.yaml
