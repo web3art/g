@@ -14,6 +14,7 @@ RUN_ROOT="$PROJECT_ROOT"
 cd $PROJECT_ROOT;
 
 readonly PROJECT_NAME="sword-g";
+readonly DOCKER_NAMESPACE="436271674037.dkr.ecr.ap-southeast-1.amazonaws.com";
 readonly RELEASE_NAME=${OMNIBUS_RELEASE:-"default"}
 readonly IMAGE_TAG=${VERSION:-$(git rev-parse --short HEAD)}
 
