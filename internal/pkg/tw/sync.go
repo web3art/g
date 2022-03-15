@@ -13,7 +13,7 @@ func (tw *Tweet) SyncRecentPool(topics []string) error {
 			if err != nil {
 				fmt.Printf("sync recent tweet error %s", err.Error())
 			}
-			time.Sleep(5 * time.Minute)
+			time.Sleep(1 * time.Minute)
 		}
 	}()
 	return nil
