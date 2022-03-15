@@ -25,7 +25,7 @@ func Serve(c *cli.Context) error {
 		return err
 	}
 
-	tweet := tw.MakeTweet("AAAAAAAAAAAAAAAAAAAAAEbNXwEAAAAAFI8uK2vtlD1RbBp4OkHRbv3qxC0%3DgL16PjF1qoUXxaeRLntPAp0yWjCWfNjh1qBZX6ze51sDyOAY5g")
+	tweet := tw.MakeTweet(os.Getenv("TWITTER_TOKEN"))
 	tweet.SyncRecentPool([]string{"web3sword"})
 	tweet.UpdateTweetScorePool()
 
