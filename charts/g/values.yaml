@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: 436271674037.dkr.ecr.ap-southeast-1.amazonaws.com/sword-g
   pullPolicy: IfNotPresent
-  tag: 6a9c02d5c49118b3a45834d9347c45e9b934b23f
+  tag: 2aa3d08dd4f87d71e93d5f2f22a85d4f24011fac
 
 serviceAccount:
   # Specifies whether a service account should be created

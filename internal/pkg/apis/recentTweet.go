@@ -49,7 +49,7 @@ func GetTwteetToWinList(w http.ResponseWriter, r *http.Request) {
 
 	var tweets []model.Tweet
 
-	if err := db.DB().Model(&model.Tweet{}).Order("created_at desc").Where("is_claim_tweet = ?", false).Find(&tweets).Error; err != nil {
+	if err := db.DB().Model(&model.Tweet{}).Order("score desc").Where("is_claim_tweet = ?", false).Find(&tweets).Error; err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
