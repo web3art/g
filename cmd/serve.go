@@ -26,7 +26,7 @@ func Serve(c *cli.Context) error {
 	}
 
 	tweet := tw.MakeTweet(os.Getenv("TWITTER_TOKEN"))
-	tweet.SyncRecentPool([]string{"web3sword"})
+	// tweet.SyncRecentPool([]string{"web3sword"})
 	tweet.UpdateTweetScorePool()
 
 	mux := http.NewServeMux()
