@@ -7,6 +7,7 @@ import (
 	"github.com/web3art/g/internal/pkg/dao/model"
 	"github.com/web3art/g/internal/pkg/db"
 	"github.com/web3art/g/internal/pkg/types"
+	"gorm.io/gorm"
 )
 
 func RecentTwteet(w http.ResponseWriter, r *http.Request) {
@@ -45,13 +46,53 @@ func RecentTwteet(w http.ResponseWriter, r *http.Request) {
 
 func GetTwteetToWinList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("{\"hello\": \"world\"}"))
+
+	var tweets []model.Tweet
+
+	if err := db.DB().Model(&model.Tweet{}).Order("created_at desc").Where("is_claim_tweet = ?", false).Find(&tweets).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	var ttws []TwteetToWin = []TwteetToWin{}
+
+	for _, t := range tweets {
+		var twtc *model.TweetWaitToClaim
+		if err := db.DB().First(&twtc, t.Id).Error; err != nil && err != gorm.ErrRecordNotFound {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		if twtc != nil {
+			ttws = append(ttws, TwteetToWin{
+				Twteet:  modelTweetToAPITwteet(t),
+				TokenId: &twtc.TokenId,
+				Claimed: &twtc.Claimed,
+			})
+		} else {
+			ttws = append(ttws, TwteetToWin{
+				Twteet: modelTweetToAPITwteet(t),
+			})
+		}
+	}
+
+	j, err := json.Marshal(ttws)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Write(j)
 }
 
 func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var ts []TemporaryToken
+	var ts []TemporaryToken = []TemporaryToken{}
 	var tcs []model.TweetWaitToClaim
 
 	if err := db.DB().Model(&model.TweetWaitToClaim{}).Order("id desc").Limit(100).Find(&tcs).Error; err != nil {

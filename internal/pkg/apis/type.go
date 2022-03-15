@@ -43,7 +43,7 @@ type TemporaryToken struct {
 }
 
 type TwteetToWin struct {
-	TokenId *int64 `json:"tokenId,omitempty"`
+	TokenId *uint  `json:"tokenId,omitempty"`
 	Claimed *bool  `json:"claimed,omitempty"`
 	Twteet  Twteet `json:"twteet"`
 }

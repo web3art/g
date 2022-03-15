@@ -30,4 +30,5 @@ type TweetWaitToClaim struct {
 	Id      uint `gorm:"primaryKey;AUTO_INCREMENT"`
 	TweetId uint `gorm:"index"`
 	TokenId uint
+	Claimed bool
 }
