@@ -37,7 +37,7 @@ func AssignWaitToClaimTokenPool() {
 				} else if err == gorm.ErrRecordNotFound {
 					// fetch twteet score highest
 					var twteet model.Tweet
-					if err := db.DB().Model(model.Tweet{}).Where("token_id = ? and assigned = false", tokenId).Order("score desc").Limit(1).First(&twteet).Error; err != nil {
+					if err := db.DB().Model(model.Tweet{}).Where("assigned = false").Order("score desc").Limit(1).First(&twteet).Error; err != nil {
 						fmt.Println("fetch get tweet error:", err.Error())
 						continue
 					}
@@ -57,7 +57,7 @@ func AssignWaitToClaimTokenPool() {
 						return nil
 					})
 				} else {
-					fmt.Println("token already exists:", tokenId)
+					// fmt.Println("token already exists:", tokenId)
 					continue
 				}
 			}

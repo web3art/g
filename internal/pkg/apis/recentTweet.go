@@ -112,7 +112,7 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		ts = append(ts, TemporaryToken{
-			TokenId: t.Id,
+			TokenId: t.TokenId,
 			Claimed: false,
 			Twteet:  modelTweetToAPITwteet(tw),
 		})
