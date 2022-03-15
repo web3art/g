@@ -59,7 +59,7 @@ func GetTwteetToWinList(w http.ResponseWriter, r *http.Request) {
 
 	for _, t := range tweets {
 		var twtc *model.TweetWaitToClaim
-		if err := db.DB().First(&twtc, t.Id).Error; err != nil && err != gorm.ErrRecordNotFound {
+		if err := db.DB().Where("tweet_id = ?", t.Id).First(&twtc).Error; err != nil && err != gorm.ErrRecordNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
 			return
