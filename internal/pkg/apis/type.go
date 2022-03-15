@@ -47,3 +47,9 @@ type TwteetToWin struct {
 	Claimed *bool  `json:"claimed,omitempty"`
 	Twteet  Twteet `json:"twteet"`
 }
+
+type Config struct {
+	SubgraphEndpoint string `json:"subgraphEndpoint"`
+	SowrdAddress     string `json:"sowrdAddress"`
+	EthNetwork       string `json:"ethNetwork"`
+}

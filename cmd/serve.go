@@ -26,13 +26,15 @@ func Serve(c *cli.Context) error {
 	}
 
 	tweet := tw.MakeTweet(os.Getenv("TWITTER_TOKEN"))
-	// tweet.SyncRecentPool([]string{"web3sword"})
+	tweet.SyncRecentPool([]string{"web3sword"})
 	tweet.UpdateTweetScorePool()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/recent-twteet", apis.RecentTwteet)
 	mux.HandleFunc("/twteet-to-wins", apis.GetTwteetToWinList)
 	mux.HandleFunc("/temporary-token", apis.GetTemporaryToken)
+	mux.HandleFunc("/current-price", apis.GetCurrentPrice)
+	mux.HandleFunc("/config", apis.GetConfig)
 
 	// cors.Default() setup the middleware with default options being
 	// all origins accepted with simple methods (GET, POST). See

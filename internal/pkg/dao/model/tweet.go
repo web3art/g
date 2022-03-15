@@ -13,6 +13,7 @@ type Tweet struct {
 	LikeCount             int
 	RetweetCount          int
 	Score                 int `gorm:"index"`
+	Assigned              bool
 	Text                  string
 	IsClaimTweet          bool
 	CreatedAt             time.Time `gorm:"index"`
@@ -28,7 +29,7 @@ type TweetAuthorAddress struct {
 
 type TweetWaitToClaim struct {
 	Id      uint `gorm:"primaryKey;AUTO_INCREMENT"`
-	TweetId uint `gorm:"index"`
+	TweetId uint `gorm:"uniqueIndex"`
 	TokenId uint
 	Claimed bool
 }

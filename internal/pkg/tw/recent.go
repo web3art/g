@@ -24,6 +24,15 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 		Host:   "https://api.twitter.com",
 	}
 
+	var maxTwtterId uint
+	if err := db.DB().Model(&model.Tweet{}).Order("id desc").Limit(1).Select("id").Scan(&maxTwtterId).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			maxTwtterId = 0
+		} else {
+			return err
+		}
+	}
+
 	opts := gt.TweetRecentSearchOpts{
 		Expansions: []gt.Expansion{
 			gt.ExpansionEntitiesMentionsUserName,
@@ -38,6 +47,7 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 		UserFields: []gt.UserField{
 			gt.UserFieldProfileImageURL,
 		},
+		SinceID: fmt.Sprintf("%d", maxTwtterId),
 	}
 	topichash := ""
 	for _, topic := range topics {
@@ -68,6 +78,7 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 					AuthorproFileImageUrl: twteet.Author.ProfileImageURL,
 					LikeCount:             twteet.Tweet.PublicMetrics.Likes,
 					RetweetCount:          twteet.Tweet.PublicMetrics.Retweets,
+					Assigned:              false,
 					// Retweets * 40% + Likes * 60%
 					Score:        int(twteet.Tweet.PublicMetrics.Likes*40/100 + twteet.Tweet.PublicMetrics.Retweets*60/100),
 					Text:         twteet.Tweet.Text,
