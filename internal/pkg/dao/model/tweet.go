@@ -28,8 +28,9 @@ type TweetAuthorAddress struct {
 }
 
 type TweetWaitToClaim struct {
-	Id      uint `gorm:"primaryKey;AUTO_INCREMENT"`
-	TweetId uint `gorm:"uniqueIndex"`
-	TokenId uint
-	Claimed bool
+	Id       uint `gorm:"primaryKey;AUTO_INCREMENT"`
+	TweetId  uint `gorm:"uniqueIndex"`
+	AuthorId uint `gorm:"uniqueIndex"`
+	TokenId  uint
+	Claimed  bool
 }
