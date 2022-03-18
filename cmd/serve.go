@@ -29,7 +29,8 @@ func Serve(c *cli.Context) error {
 	tweet.SyncRecentPool([]string{"web3sword"})
 	tweet.UpdateTweetScorePool()
 	tweet.ClaimPool()
-	tw.AssignWaitToClaimTokenPool()
+	tw.AssignTwteetToWinWaitToClaimTokenPool()
+	tw.AssignLuckyWaitToClaimTokenPool()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/recent-twteet", apis.RecentTwteet)

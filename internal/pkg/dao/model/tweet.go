@@ -16,6 +16,7 @@ type Tweet struct {
 	Assigned              bool
 	Text                  string
 	IsClaimTweet          bool
+	IsLuckyTweet          bool
 	CreatedAt             time.Time `gorm:"index"`
 	UpdatedAt             time.Time `gorm:"index"`
 }
