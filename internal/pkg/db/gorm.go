@@ -9,7 +9,7 @@ var db *gorm.DB
 
 func autoMigrate() error {
 	models := []interface{}{}
-	models = append(models, model.Tweet{}, model.TweetAuthorAddress{}, model.TweetWaitToClaim{})
+	models = append(models, model.Tweet{}, model.TweetAuthorAddress{}, model.TweetWaitToClaim{}, model.UserStatistics{})
 	return db.AutoMigrate(models...)
 }
 

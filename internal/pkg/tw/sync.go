@@ -33,3 +33,16 @@ func (tw *Tweet) UpdateTweetScorePool() error {
 	}()
 	return nil
 }
+
+func (tw *Tweet) ClaimPool() error {
+	go func() {
+		for {
+			err := tw.Claim()
+			if err != nil {
+				fmt.Printf("claim tweet error %s", err.Error())
+			}
+			time.Sleep(1 * time.Minute)
+		}
+	}()
+	return nil
+}

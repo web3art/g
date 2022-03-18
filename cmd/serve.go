@@ -28,6 +28,7 @@ func Serve(c *cli.Context) error {
 	tweet := tw.MakeTweet(os.Getenv("TWITTER_TOKEN"))
 	tweet.SyncRecentPool([]string{"web3sword"})
 	tweet.UpdateTweetScorePool()
+	tweet.ClaimPool()
 	tw.AssignWaitToClaimTokenPool()
 
 	mux := http.NewServeMux()
@@ -35,6 +36,8 @@ func Serve(c *cli.Context) error {
 	mux.HandleFunc("/twteet-to-wins", apis.GetTwteetToWinList)
 	mux.HandleFunc("/temporary-token", apis.GetTemporaryToken)
 	mux.HandleFunc("/current-price", apis.GetCurrentPrice)
+	mux.HandleFunc("/report-uj", apis.ReportUserStatics)
+	mux.HandleFunc("/get-uj", apis.GetStatics)
 	mux.HandleFunc("/config", apis.GetConfig)
 
 	// cors.Default() setup the middleware with default options being

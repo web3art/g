@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -13,6 +14,25 @@ import (
 	"github.com/web3art/g/internal/pkg/types"
 	"gorm.io/gorm"
 )
+
+// I'm eth address is 0x714df076992f95E452A345cD8289882CEc6ab82F
+func ExtractEthAddress(text string) (*string, error) {
+	index := strings.Index(text, "0x")
+
+	if index == -1 {
+		return nil, fmt.Errorf("no eth address found")
+	}
+
+	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+	address := text[index : index+42]
+
+	// check if address is valid
+	if !re.MatchString(address) {
+		return nil, fmt.Errorf("invalid eth address")
+	}
+
+	return &address, nil
+}
 
 // Find recent tweets that are regular topics and not retweets
 func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
@@ -53,12 +73,16 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 	for _, topic := range topics {
 		topichash += fmt.Sprintf("#%s ", topic)
 	}
-	query := fmt.Sprintf("%s -is:retweet", topichash)
+	query := fmt.Sprintf(strings.TrimRight("%s -is:retweet", " "), topichash)
+
+	println(query, fmt.Sprintf("%d", maxTwtterId))
+
 	tweetResponse, err := client.TweetRecentSearch(context.Background(), query, opts)
 	if err != nil {
 		return err
 	}
 	dictionaries := tweetResponse.Raw.TweetDictionaries()
+
 	for _, twteet := range dictionaries {
 		if err := db.DB().First(&model.Tweet{}, "id = ?", twteet.Tweet.ID).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
@@ -70,6 +94,24 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 				if err != nil {
 					return err
 				}
+
+				isClaimTweet := strings.Contains(twteet.Tweet.Text, "#claim")
+
+				if isClaimTweet {
+					// parse tweet eth address insert to Model.TweetAuthorAddress
+					if ethAddress, err := ExtractEthAddress(twteet.Tweet.Text); err != nil {
+						return err
+					} else {
+						if err := db.DB().Create(&model.TweetAuthorAddress{
+							BindTweetId: uint(id),
+							AuthorId:    uint(authorId),
+							Address:     *ethAddress,
+						}).Error; err != nil {
+							return err
+						}
+					}
+				}
+
 				db.DB().Create(&model.Tweet{
 					Id:                    uint(id),
 					AuthorId:              uint(authorId),
@@ -82,7 +124,7 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 					// Retweets * 40% + Likes * 60%
 					Score:        int(twteet.Tweet.PublicMetrics.Likes*40/100 + twteet.Tweet.PublicMetrics.Retweets*60/100),
 					Text:         twteet.Tweet.Text,
-					IsClaimTweet: strings.Contains(twteet.Tweet.Text, "#claim"),
+					IsClaimTweet: isClaimTweet,
 					CreatedAt:    time.Now().UTC(),
 					UpdatedAt:    time.Now().UTC(),
 				})
