@@ -174,7 +174,9 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 	twteetIds := []uint{
 		0,
 	}
-	authorIds := []uint{}
+	authorIds := []uint{
+		0,
+	}
 
 	for _, t := range twteetToWinTokenIds {
 		if tokenAssigned[t] {
