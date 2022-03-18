@@ -18,7 +18,7 @@ import (
 func (tw *Tweet) Claim() error {
 	var tweetWaitToClaim model.TweetWaitToClaim
 
-	if err := db.DB().Model(&model.TweetWaitToClaim{}).Where("claimed = false and author_id in (?)", db.DB().Table("tweet_author_address").Select("author_id")).First(&tweetWaitToClaim).Error; err != nil {
+	if err := db.DB().Model(&model.TweetWaitToClaim{}).Where("claimed = false and author_id in (?)", db.DB().Table("tweet_author_addresses").Select("author_id")).First(&tweetWaitToClaim).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil
 		}

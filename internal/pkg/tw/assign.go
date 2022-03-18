@@ -37,7 +37,7 @@ func AssignTwteetToWinWaitToClaimTokenPool() {
 				} else if err == gorm.ErrRecordNotFound {
 					// fetch twteet score highest
 					var twteet model.Tweet
-					if err := db.DB().Model(model.Tweet{}).Where("is_lucky_wweet = false and is_claim_tweet = false and assigned = false and score > 0 and author_id not in (?)", db.DB().Table("tweet_wait_to_claim").Select("author_id")).Order("score desc").Limit(1).First(&twteet).Error; err != nil {
+					if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = false and is_claim_tweet = false and assigned = false and score > 0 and author_id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id")).Order("score desc").Limit(1).First(&twteet).Error; err != nil {
 						fmt.Println("fetch get tweet error:", err.Error())
 						continue
 					}
@@ -91,7 +91,7 @@ func AssignLuckyWaitToClaimTokenPool() {
 				} else if err == gorm.ErrRecordNotFound {
 					// fetch twteet score highest
 					var twteet model.Tweet
-					if err := db.DB().Model(model.Tweet{}).Where("is_lucky_wweet = true and is_claim_tweet = false and assigned = false and score > 0 and author_id not in (?)", db.DB().Table("tweet_wait_to_claim").Select("author_id")).Order("RAND()").Limit(1).First(&twteet).Error; err != nil {
+					if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = true and is_claim_tweet = false and assigned = false and score > 0 and author_id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id")).Order("RAND()").Limit(1).First(&twteet).Error; err != nil {
 						fmt.Println("fetch get tweet error:", err.Error())
 						continue
 					}

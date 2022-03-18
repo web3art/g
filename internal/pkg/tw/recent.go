@@ -44,10 +44,10 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 		Host:   "https://api.twitter.com",
 	}
 
-	var maxTwtterId uint
+	var maxTwtterId uint = 1503444294723645447
 	if err := db.DB().Model(&model.Tweet{}).Order("id desc").Limit(1).Select("id").Scan(&maxTwtterId).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			maxTwtterId = 0
+			maxTwtterId = 1503444294723645447
 		} else {
 			return err
 		}
@@ -57,25 +57,28 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 		Expansions: []gt.Expansion{
 			gt.ExpansionEntitiesMentionsUserName,
 			gt.ExpansionAuthorID,
+			gt.ExpansionAttachmentsMediaKeys,
 		},
 		TweetFields: []gt.TweetField{
 			gt.TweetFieldCreatedAt,
 			gt.TweetFieldConversationID,
 			gt.TweetFieldPublicMetrics,
-			gt.TweetFieldInReplyToUserID,
 		},
 		UserFields: []gt.UserField{
 			gt.UserFieldProfileImageURL,
 		},
+		MediaFields: []gt.MediaField{
+			gt.MediaFieldURL,
+			gt.MediaFieldPreviewImageURL,
+		},
 		SinceID: fmt.Sprintf("%d", maxTwtterId),
 	}
+
 	topichash := ""
 	for _, topic := range topics {
 		topichash += fmt.Sprintf("#%s ", topic)
 	}
 	query := fmt.Sprintf(strings.TrimRight("%s -is:retweet", " "), topichash)
-
-	println(query, fmt.Sprintf("%d", maxTwtterId))
 
 	tweetResponse, err := client.TweetRecentSearch(context.Background(), query, opts)
 	if err != nil {
@@ -97,6 +100,7 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 
 				IsLuckyTweet := strings.Contains(twteet.Tweet.Text, "#LuckyW3S")
 				isClaimTweet := strings.Contains(twteet.Tweet.Text, "#claim")
+				TwteetImageURL := ""
 
 				if isClaimTweet {
 					// parse tweet eth address insert to Model.TweetAuthorAddress
@@ -113,12 +117,19 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 					}
 				}
 
+				for _, media := range twteet.AttachmentMedia {
+					if media.Type == "photo" {
+						TwteetImageURL = media.URL
+					}
+				}
+
 				db.DB().Create(&model.Tweet{
 					Id:                    uint(id),
 					AuthorId:              uint(authorId),
 					AuthorName:            twteet.Author.Name,
 					AuthorUserName:        twteet.Author.UserName,
 					AuthorproFileImageUrl: twteet.Author.ProfileImageURL,
+					TwteetImageURL:        TwteetImageURL,
 					LikeCount:             twteet.Tweet.PublicMetrics.Likes,
 					RetweetCount:          twteet.Tweet.PublicMetrics.Retweets,
 					Assigned:              false,

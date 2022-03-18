@@ -10,6 +10,7 @@ type Tweet struct {
 	AuthorName            string `gorm:"type:varchar(170)"`
 	AuthorUserName        string `gorm:"type:varchar(170)"`
 	AuthorproFileImageUrl string `gorm:"type:varchar(255)"`
+	TwteetImageURL        string `gorm:"type:varchar(255)"`
 	LikeCount             int
 	RetweetCount          int
 	Score                 int `gorm:"index"`
@@ -29,12 +30,11 @@ type TweetAuthorAddress struct {
 }
 
 type TweetWaitToClaim struct {
-	Id        uint `gorm:"primaryKey;AUTO_INCREMENT"`
-	TweetId   uint `gorm:"uniqueIndex"`
-	AuthorId  uint `gorm:"uniqueIndex"`
-	TokenId   uint `gorm:"uniqueIndex"`
-	Claimed   bool
-	ClaimHash string
+	Id       uint `gorm:"primaryKey;AUTO_INCREMENT"`
+	TweetId  uint `gorm:"uniqueIndex"`
+	AuthorId uint `gorm:"uniqueIndex"`
+	TokenId  uint `gorm:"uniqueIndex"`
+	Claimed  bool
 }
 
 type UserStatistics struct {
