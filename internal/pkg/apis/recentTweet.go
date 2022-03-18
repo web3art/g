@@ -50,7 +50,7 @@ func GetTwteetToWinList(w http.ResponseWriter, r *http.Request) {
 
 	var tweets []model.Tweet
 
-	if err := db.DB().Model(&model.Tweet{}).Order("score desc").Where("is_claim_tweet = ?", false).Find(&tweets).Error; err != nil {
+	if err := db.DB().Model(&model.Tweet{}).Order("score desc, retweet_count desc, like_count desc").Where("is_claim_tweet = ?", false).Find(&tweets).Error; err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
@@ -183,7 +183,7 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		var twteet model.Tweet
-		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = false and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("score desc").Limit(1).First(&twteet).Error; err != nil {
+		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = false and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("score desc, retweet_count desc, like_count desc").Limit(1).First(&twteet).Error; err != nil {
 			fmt.Println("fetch get tweet error:", err.Error())
 			continue
 		}
