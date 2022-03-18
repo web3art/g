@@ -174,17 +174,19 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 	twteetIds := []uint{
 		0,
 	}
+	authorIds := []uint{}
 
 	for _, t := range twteetToWinTokenIds {
 		if tokenAssigned[t] {
 			continue
 		}
 		var twteet model.Tweet
-		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = false and is_claim_tweet = false and assigned = false and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), twteetIds).Order("score desc").Limit(1).First(&twteet).Error; err != nil {
+		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = false and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("score desc").Limit(1).First(&twteet).Error; err != nil {
 			fmt.Println("fetch get tweet error:", err.Error())
 			continue
 		}
 		twteetIds = append(twteetIds, twteet.Id)
+		authorIds = append(authorIds, twteet.AuthorId)
 		ts = append(ts, TemporaryToken{
 			TokenId:    t,
 			Claimed:    false,
@@ -198,11 +200,12 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		var twteet model.Tweet
-		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = true and is_claim_tweet = false and assigned = false and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), twteetIds).Order("id desc").Limit(1).First(&twteet).Error; err != nil {
+		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = true and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("id desc").Limit(1).First(&twteet).Error; err != nil {
 			fmt.Println("fetch get tweet error:", err.Error())
 			continue
 		}
 		twteetIds = append(twteetIds, twteet.Id)
+		authorIds = append(authorIds, twteet.AuthorId)
 		ts = append(ts, TemporaryToken{
 			TokenId:    t,
 			Claimed:    false,
