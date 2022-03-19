@@ -35,11 +35,14 @@ func (t *Tweet) UpdateTweetScore() error {
 		tweetResponse, err := client.TweetLookup(context.Background(), []string{
 			fmt.Sprintf("%d", tweet.Id),
 		}, opts)
+
 		if err != nil {
 			return err
 		}
+
 		if tweetResponse.Raw.Errors != nil {
-			return fmt.Errorf("%s", tweetResponse.Raw.Errors[0].Detail)
+			fmt.Printf("%s", tweetResponse.Raw.Errors[0].Detail)
+			continue
 		}
 
 		dictionaries := tweetResponse.Raw.TweetDictionaries()
