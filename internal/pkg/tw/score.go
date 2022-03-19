@@ -38,6 +38,9 @@ func (t *Tweet) UpdateTweetScore() error {
 		if err != nil {
 			return err
 		}
+		if tweetResponse.Raw == nil {
+			return fmt.Errorf("no tweet found %d", tweet.Id)
+		}
 		dictionaries := tweetResponse.Raw.TweetDictionaries()
 		for _, t := range dictionaries {
 			tweet.LikeCount = t.Tweet.PublicMetrics.Likes
