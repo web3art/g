@@ -72,6 +72,14 @@ func GetStatics(w http.ResponseWriter, r *http.Request) {
 		s.PlotLeft = q.Static.PlotLeft
 	}
 
+	if s.RevisionsoFar == "" {
+		s.RevisionsoFar = "0"
+	}
+
+	if s.PlotLeft == "" {
+		s.PlotLeft = "350"
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	j, err := json.Marshal(s)
 	if err != nil {
