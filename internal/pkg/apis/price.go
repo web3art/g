@@ -15,5 +15,9 @@ func GetCurrentPrice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if q.CurrentPrice.Price == "" {
+		q.CurrentPrice.Price = "150000000000000000"
+	}
+
 	w.Write([]byte(q.CurrentPrice.Price))
 }
