@@ -100,6 +100,7 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 
 				IsLuckyTweet := strings.Contains(twteet.Tweet.Text, "#LuckyW3S")
 				isClaimTweet := strings.Contains(twteet.Tweet.Text, "#claim")
+				IsAirdropTweet := strings.Contains(twteet.Tweet.Text, "#JoinW3S")
 				TwteetImageURL := ""
 
 				if isClaimTweet {
@@ -134,12 +135,13 @@ func (t *Tweet) SyncRecentSearchByTopicAndNoRetweet(topics []string) error {
 					RetweetCount:          twteet.Tweet.PublicMetrics.Retweets,
 					Assigned:              false,
 					// Retweets * 40% + Likes * 60%
-					Score:        int(twteet.Tweet.PublicMetrics.Likes*40/100 + twteet.Tweet.PublicMetrics.Retweets*60/100),
-					Text:         twteet.Tweet.Text,
-					IsClaimTweet: isClaimTweet,
-					IsLuckyTweet: IsLuckyTweet,
-					CreatedAt:    time.Now().UTC(),
-					UpdatedAt:    time.Now().UTC(),
+					Score:          int(twteet.Tweet.PublicMetrics.Likes*40/100 + twteet.Tweet.PublicMetrics.Retweets*60/100),
+					Text:           twteet.Tweet.Text,
+					IsClaimTweet:   isClaimTweet,
+					IsLuckyTweet:   IsLuckyTweet,
+					IsAirdropTweet: IsAirdropTweet,
+					CreatedAt:      time.Now().UTC(),
+					UpdatedAt:      time.Now().UTC(),
 				})
 			}
 		}

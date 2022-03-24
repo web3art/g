@@ -13,7 +13,7 @@ import (
 
 func (t *Tweet) UpdateTweetScore() error {
 	var tweets []model.Tweet
-	if err := db.DB().Model(&model.Tweet{}).Order("updated_at asc").Limit(200).Where("is_claim_tweet = ?", false).Find(&tweets).Error; err != nil {
+	if err := db.DB().Model(&model.Tweet{}).Order("updated_at asc").Limit(200).Where("is_claim_tweet = false and is_airdrop_tweet = false and is_lucky_tweet = false").Find(&tweets).Error; err != nil {
 		return err
 	}
 

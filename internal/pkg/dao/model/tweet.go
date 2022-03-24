@@ -18,6 +18,7 @@ type Tweet struct {
 	Text                  string
 	IsClaimTweet          bool
 	IsLuckyTweet          bool
+	IsAirdropTweet        bool
 	CreatedAt             time.Time `gorm:"index"`
 	UpdatedAt             time.Time `gorm:"index"`
 }

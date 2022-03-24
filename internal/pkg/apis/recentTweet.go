@@ -138,6 +138,30 @@ var twteetLucyTokenIds []uint = []uint{
 	90022,
 }
 
+var airdropTokenIds []uint = []uint{
+	90028,
+	100028,
+	110028,
+	90029,
+	100029,
+	110029,
+	90030,
+	100030,
+	110030,
+	90031,
+	100031,
+	110031,
+	60032,
+	70032,
+	80032,
+	70033,
+	80033,
+	70034,
+	80034,
+	70035,
+	80035,
+}
+
 func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -183,7 +207,7 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		var twteet model.Tweet
-		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = false and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("score desc, retweet_count desc, like_count desc").Limit(1).First(&twteet).Error; err != nil {
+		if err := db.DB().Model(model.Tweet{}).Where("is_airdrop_tweet = false and is_lucky_tweet = false and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("score desc, retweet_count desc, like_count desc").Limit(1).First(&twteet).Error; err != nil {
 			fmt.Println("fetch get tweet error:", err.Error())
 			continue
 		}
@@ -203,6 +227,25 @@ func GetTemporaryToken(w http.ResponseWriter, r *http.Request) {
 		}
 		var twteet model.Tweet
 		if err := db.DB().Model(model.Tweet{}).Where("is_lucky_tweet = true and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("id desc").Limit(1).First(&twteet).Error; err != nil {
+			fmt.Println("fetch get tweet error:", err.Error())
+			continue
+		}
+		twteetIds = append(twteetIds, twteet.Id)
+		authorIds = append(authorIds, twteet.AuthorId)
+		ts = append(ts, TemporaryToken{
+			TokenId:    t,
+			Claimed:    false,
+			CanClaimed: false,
+			Twteet:     modelTweetToAPITwteet(twteet),
+		})
+	}
+
+	for _, t := range airdropTokenIds {
+		if tokenAssigned[t] {
+			continue
+		}
+		var twteet model.Tweet
+		if err := db.DB().Model(model.Tweet{}).Where("is_airdrop_tweet = true and is_claim_tweet = false and assigned = false and author_id not in (?) and author_id not in (?) and id not in (?)", db.DB().Table("tweet_wait_to_claims").Select("author_id"), authorIds, twteetIds).Order("id desc").Limit(1).First(&twteet).Error; err != nil {
 			fmt.Println("fetch get tweet error:", err.Error())
 			continue
 		}
