@@ -42,3 +42,7 @@ type UserStatistics struct {
 	Id            uint `gorm:"primaryKey;AUTO_INCREMENT"`
 	UserJoinCount uint
 }
+
+type BlacklistedUsers struct {
+	AuthorId uint `gorm:"primaryKey;"`
+}
